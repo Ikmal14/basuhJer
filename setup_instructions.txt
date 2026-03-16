@@ -1,0 +1,146 @@
+================================================================================
+  WashWise — Setup & Run Instructions
+================================================================================
+
+PREREQUISITES
+─────────────
+1. Flutter SDK (v3.19+ recommended)
+   Download: https://docs.flutter.dev/get-started/install
+   After install, add Flutter to PATH and run: flutter doctor
+
+2. Android Studio (for Android emulator / building APK)
+   Download: https://developer.android.com/studio
+   Install "Flutter" and "Dart" plugins from Plugin Marketplace.
+
+3. Xcode (macOS only, for iOS builds)
+   Install from Mac App Store, then run: sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+
+4. A physical device or emulator with camera support.
+   NOTE: OCR via Google ML Kit requires a real device or emulator with
+   camera hardware. ML Kit OCR does NOT work in pure unit tests.
+
+
+STEP 1 — INSTALL DEPENDENCIES
+──────────────────────────────
+Open a terminal in the project directory:
+
+    cd "Tag Basuh Baju app"
+    flutter pub get
+
+This downloads all packages listed in pubspec.yaml.
+
+
+STEP 2 — CONFIGURE ANDROID (if building for Android)
+──────────────────────────────────────────────────────
+a) Open android/local.properties and ensure sdk.dir points to your Android SDK.
+   Example (Windows): sdk.dir=C\:\\Users\\YourName\\AppData\\Local\\Android\\Sdk
+
+b) Set minimum SDK version. Edit android/app/build.gradle:
+   - minSdkVersion 21   (required by camera + ML Kit)
+   - targetSdkVersion 34
+   - compileSdkVersion 34
+
+c) If you see a Kotlin version error, update android/build.gradle:
+   ext.kotlin_version = '1.9.10'
+
+d) Enable multidex if needed (android/app/build.gradle):
+   defaultConfig {
+       ...
+       multiDexEnabled true
+   }
+   Then add to dependencies:
+   implementation 'androidx.multidex:multidex:2.0.1'
+
+
+STEP 3 — CONFIGURE iOS (macOS only)
+────────────────────────────────────
+a) Open ios/Runner.xcworkspace in Xcode.
+b) Set the deployment target to iOS 13.0 or higher.
+c) Ensure your team / signing certificate is configured.
+d) Run: cd ios && pod install && cd ..
+
+
+STEP 4 — RUN THE APP
+─────────────────────
+Connect a device or start an emulator, then:
+
+    flutter run
+
+To run on a specific device:
+
+    flutter devices                    # list available devices
+    flutter run -d <device_id>
+
+To run in release mode (faster, no debug banner):
+
+    flutter run --release
+
+
+STEP 5 — BUILD RELEASE APK (Android)
+──────────────────────────────────────
+    flutter build apk --release
+
+Output: build/app/outputs/flutter-apk/app-release.apk
+
+To build an app bundle (for Play Store):
+    flutter build appbundle --release
+
+
+STEP 6 — BUILD iOS RELEASE (macOS only)
+─────────────────────────────────────────
+    flutter build ios --release
+    Then archive in Xcode → Product → Archive
+
+
+KNOWN ISSUES & SOLUTIONS
+─────────────────────────
+Issue: "minSdkVersion must be 21 or higher"
+Fix:   Set minSdkVersion 21 in android/app/build.gradle
+
+Issue: "MissingPluginException" for camera on first run
+Fix:   Run `flutter clean && flutter pub get && flutter run`
+
+Issue: ML Kit fails on emulator
+Fix:   Use a physical Android device. ML Kit text recognition requires
+       Google Play Services on the device.
+
+Issue: Camera permission denied on Android 13+
+Fix:   Grant camera + media permissions in device Settings > Apps > WashWise
+
+Issue: Hive box not found error on startup
+Fix:   Run `flutter clean` then rebuild. The box is created on first run.
+
+Issue: "CocoaPods not installed" on iOS
+Fix:   sudo gem install cocoapods  OR  brew install cocoapods
+
+
+FEATURES OVERVIEW
+─────────────────
+- Wardrobe Screen: Browse all saved garments in a grid. Filter by wash
+  method, temperature, and fabric type. Search by name or tag.
+
+- Scan Screen: Point camera at any clothing care tag. Tap the capture
+  button. ML Kit OCR reads the text on-device (no internet needed).
+
+- Scan Result Screen: Review extracted care instructions. Use the
+  Symbol Picker to manually add ISO care symbols if OCR missed any.
+  Tap "Save to Wardrobe" to proceed.
+
+- Add Garment Screen: Add a photo, name, and category. Review the
+  detected care profile. Add custom tags (e.g. "work", "gym").
+
+- Garment Detail Screen: Full care guide with 4 tabs:
+  (1) How to Wash — step-by-step numbered guide
+  (2) Do's & Don'ts — color-coded instruction cards
+  (3) Chemicals — safe and unsafe products list
+  (4) Handling — ironing, drying, and storage advice
+
+DATA STORAGE
+─────────────
+All data is stored locally using Hive (NoSQL key-value store).
+No account, no cloud, no internet required for core features.
+Data is stored at:
+  Android: /data/data/com.example.washwise/app_flutter/
+  iOS:     <App Documents Directory>/
+
+================================================================================
