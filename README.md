@@ -1,4 +1,4 @@
-# WashWise
+# basuhJer
 
 A hybrid mobile app (Android & iOS) that scans clothing care tags and tells you exactly how to wash, dry, iron, and care for each garment — no guessing, no ruined clothes.
 
@@ -156,7 +156,7 @@ The app includes all standard ISO 3758 care symbols across 5 categories:
 - No account, no login, no cloud sync
 - No data ever leaves your device
 - Storage location:
-  - Android: `/data/data/com.washwise.app/app_flutter/`
+  - Android: `/data/data/com.basuhjer.app/app_flutter/`
   - iOS: `<App Documents Directory>/`
 
 ---
